@@ -1,0 +1,56 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <div class="box">
+        <h2>To Do List</h2>
+        <form action="/api/Task" method="POST">
+            <label for="name">Nom de la tâche:</label>
+            <input type="text" id="inputBx" name="name" required>
+            <button type="submit">Créer</button>
+        </form>
+        <ul id="list">
+            <% if (databaseData.length > 0) { %>
+                <% databaseData.forEach(function(task) { %>
+                    <li><%= task.title %></li>
+                    <button onclick="confirmDelete('<%= task.idTask %>')">Supprimer</button>
+                <% }); %>
+            <% } else { %>
+                <li>Aucune tâche disponible.</li>
+            <% } %>
+        </ul>
+    </div>
+</div>
+<script>
+    function confirmDelete(taskId) {
+        if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
+            deleteTask(taskId);
+        }
+    }
+
+    function deleteTask(taskId) {
+        fetch(`http://localhost:3000/api/Task/${taskId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.status === 200) {
+                console.log('Tâche supprimée avec succès');
+            } else if (response.status === 404) {
+                console.error('Aucun enregistrement avec l\'identifiant donné');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur lors de la suppression de la tâche:', error);
+        });
+    }
+</script>
+</body>
+</html>
